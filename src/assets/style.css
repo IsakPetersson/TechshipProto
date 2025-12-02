@@ -19,67 +19,19 @@ body {
     line-height: 1.6;
     color: var(--text-dark);
     background-color: var(--background);
-}
-
-/* Navigation */
-nav {
-    background-color: var(--primary-dark);
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--text-light);
-}
-
-.logo a {
-    color: var(--text-light);
-    text-decoration: none;
-}
-
-.nav-links {
-    display: flex;
-    list-style: none;
-    gap: 2rem;
-}
-
-.nav-links a {
-    color: var(--text-light);
-    text-decoration: none;
-    font-weight: 500;
-    transition: opacity 0.3s ease;
-}
-
-.nav-links a:hover,
-.nav-links a.active {
-    opacity: 0.8;
-    border-bottom: 2px solid var(--text-light);
+    margin: 0;
+    padding: 0;
 }
 
 /* Hero Section */
 .hero {
     background: linear-gradient(135deg, var(--primary-meddark) 0%, var(--primary-medium) 100%);
-    min-height: 100vh;
+    min-height: 60vh;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 2rem;
-    margin-top: 60px;
+    padding: 1.2rem;
 }
 
 .hero-content {
@@ -263,7 +215,6 @@ footer p {
     justify-content: center;
     text-align: center;
     padding: 2rem;
-    margin-top: 60px;
 }
 
 /* Services Page Styles */
