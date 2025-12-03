@@ -77,11 +77,7 @@
     <div class="main-content">
       <router-view />
 
-      <footer>
-        <div class="container">
-          <p>&copy; 2025 TechshipProto. All rights reserved.</p>
-        </div>
-      </footer>
+      
     </div>
   </div>
 </template>

@@ -12,59 +12,13 @@
 
         <!-- Main Content Grid -->
         <div class="main-grid">
-          <!-- Left Column - Financial Overview -->
+          <!-- Top Left - Quick Actions -->
           <div class="left-column">
-            <!-- Financial Overview -->
-            <div class="stats-compact">
-              <h3 class="section-title">Ekonomisk Översikt</h3>
-              <div class="stat-card-compact">
-                <div class="stat-label">Kassa & Bank</div>
-                <div class="stat-amount">{{ cashAndBank.toLocaleString() }} kr</div>
-              </div>
-              <div class="stat-card-compact income">
-                <div class="stat-label">Månadens Intäkter</div>
-                <div class="stat-amount">+{{ monthlyIncome.toLocaleString() }} kr</div>
-              </div>
-              <div class="stat-card-compact expense">
-                <div class="stat-label">Månadens Utgifter</div>
-                <div class="stat-amount">-{{ monthlyExpenses.toLocaleString() }} kr</div>
-              </div>
-              <div class="stat-card-compact" :class="monthlyResult >= 0 ? 'income' : 'expense'">
-                <div class="stat-label">Resultat</div>
-                <div class="stat-amount">{{ monthlyResult >= 0 ? '+' : '' }}{{ monthlyResult.toLocaleString() }} kr</div>
-              </div>
-            </div>
-
-            <!-- Income Breakdown -->
-            <div class="breakdown-panel">
-              <h3>Intäkter (Uppdelning)</h3>
-              <div class="breakdown-list">
-                <div v-for="item in incomeBreakdown" :key="item.id" class="breakdown-row">
-                  <span class="breakdown-label">{{ item.category }}</span>
-                  <span class="breakdown-value">{{ item.amount.toLocaleString() }} kr</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Expense Breakdown -->
-            <div class="breakdown-panel">
-              <h3>Utgifter (Uppdelning)</h3>
-              <div class="breakdown-list">
-                <div v-for="item in expenseBreakdown" :key="item.id" class="breakdown-row">
-                  <span class="breakdown-label">{{ item.category }}</span>
-                  <span class="breakdown-value">{{ item.amount.toLocaleString() }} kr</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Center Column - Quick Actions -->
-          <div class="center-column">
             <div class="panel">
               <div class="panel-header">
                 <h3>Snabbknappar</h3>
               </div>
-              <div class="quick-actions-grid">
+              <div class="quick-actions-grid" style="padding-top: 10px;">
                 <button class="quick-action-card" @click="handleAction('upload-receipt')">
                   <span class="action-icon">↑</span>
                   <span class="action-text">Ladda upp Kvitto</span>
@@ -99,8 +53,49 @@
                 </button>
               </div>
             </div>
+          </div>
 
-            <!-- Member Status -->
+          <!-- Top Center - Financial Overview (spans 2 columns) -->
+          <div class="center-column">
+            <div class="stats-compact">
+              <h3 class="section-title">Ekonomisk Översikt</h3>
+              <div class="stat-card-compact">
+                <div class="stat-label">Kassa & Bank</div>
+                <div class="stat-amount">{{ cashAndBank.toLocaleString() }} kr</div>
+              </div>
+              <div class="stat-card-compact income">
+                <div class="stat-label">Månadens Intäkter</div>
+                <div class="stat-amount">+{{ monthlyIncome.toLocaleString() }} kr</div>
+              </div>
+              <div class="stat-card-compact expense">
+                <div class="stat-label">Månadens Utgifter</div>
+                <div class="stat-amount">-{{ monthlyExpenses.toLocaleString() }} kr</div>
+              </div>
+              <div class="stat-card-compact" :class="monthlyResult >= 0 ? 'income' : 'expense'">
+                <div class="stat-label">Resultat</div>
+                <div class="stat-amount">{{ monthlyResult >= 0 ? '+' : '' }}{{ monthlyResult.toLocaleString() }} kr</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Right - Alerts/To Do -->
+          <div class="right-column">
+            <div class="panel">
+              <div class="panel-header">
+                <h3>Att Göra</h3>
+              </div>
+              <div class="alerts-compact">
+                <div v-for="alert in alerts" :key="alert.id" class="alert-row" :class="alert.type">
+                  <span class="alert-icon">!</span>
+                  <span class="alert-text">{{ alert.message }}</span>
+                </div>
+              </div>
+              <button class="alerts-action-btn" @click="handleViewAllAlerts">Åtgärda Alla</button>
+            </div>
+          </div>
+
+          <!-- Bottom Left - Member Status -->
+          <div class="bottom-left">
             <div class="panel">
               <h3 class="panel-header-title">Medlemsstatus</h3>
               <div class="member-stats-compact">
@@ -120,8 +115,39 @@
             </div>
           </div>
 
-          <!-- Right Column - Recent Activity & Alerts -->
-          <div class="right-column">
+          <!-- Bottom Center - Income and Expense Breakdowns (spans 2 columns) -->
+          <div class="bottom-center">
+            <div class="center-split">
+              <!-- Income Breakdown -->
+              <div class="breakdown-panel">
+                <h3>Intäkter (Uppdelning)</h3>
+                <div class="breakdown-list">
+                  <div v-for="item in incomeBreakdown" :key="item.id" class="breakdown-row">
+                    <span class="breakdown-label">{{ item.category }}</span>
+                    <span class="breakdown-value">{{ item.amount.toLocaleString() }} kr</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Expense Breakdown -->
+              <div class="breakdown-panel">
+                <h3>Utgifter (Uppdelning)</h3>
+                <div class="breakdown-list">
+                  <div v-for="item in expenseBreakdown" :key="item.id" class="breakdown-row">
+                    <span class="breakdown-label">{{ item.category }}</span>
+                    <span class="breakdown-value">{{ item.amount.toLocaleString() }} kr</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Right 1 - Empty placeholder -->
+          <div class="bottom-right-1">
+          </div>
+
+          <!-- Bottom Right 2 - Recent Activity -->
+          <div class="bottom-right-2">
             <div class="panel">
               <div class="panel-header">
                 <h3>Senaste Aktivitet</h3>
@@ -138,22 +164,331 @@
                 </div>
               </div>
             </div>
-
-            <div class="panel">
-              <div class="panel-header">
-                <h3>Att Göra</h3>
-              </div>
-              <div class="alerts-compact">
-                <div v-for="alert in alerts" :key="alert.id" class="alert-row" :class="alert.type">
-                  <span class="alert-icon">!</span>
-                  <span class="alert-text">{{ alert.message }}</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- File Upload Modal -->
+    <div v-if="showUploadModal" class="modal-overlay" @click="closeUploadModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h2>Ladda upp Kvitto</h2>
+          <button class="close-btn" @click="closeUploadModal">×</button>
+        </div>
+        <div 
+          class="upload-area"
+          :class="{ 'dragover': isDragging }"
+          @drop="handleDrop"
+          @dragover="handleDragOver"
+          @dragleave="handleDragLeave"
+          @dragenter="handleDragEnter"
+        >
+          <div class="upload-icon">↑</div>
+          <p class="upload-text">Dra och släpp filer här</p>
+          <p class="upload-subtext">eller</p>
+          <input 
+            type="file" 
+            ref="fileInput" 
+            @change="handleFileSelect" 
+            multiple 
+            accept="image/*,.pdf"
+            style="display: none;"
+          />
+          <button class="browse-btn" @click="$refs.fileInput.click()">Bläddra efter filer</button>
+          <p class="upload-hint">Stödda format: Bilder (JPG, PNG) och PDF</p>
+        </div>
+        <div v-if="selectedFiles.length > 0" class="file-list">
+          <h3>Valda filer ({{ selectedFiles.length }})</h3>
+          <div v-for="(file, index) in selectedFiles" :key="index" class="file-item">
+            <span class="file-icon">□</span>
+            <span class="file-name">{{ file.name }}</span>
+            <span class="file-size">{{ formatFileSize(file.size) }}</span>
+            <button class="remove-file-btn" @click="removeFile(index)">×</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" @click="closeUploadModal">Avbryt</button>
+          <button 
+            class="upload-btn" 
+            @click="uploadFiles" 
+            :disabled="selectedFiles.length === 0"
+          >
+            Ladda upp ({{ selectedFiles.length }})
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div v-if="showAddMemberModal" class="modal-overlay" @click="closeAddMemberModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h2>Lägg till Medlem</h2>
+          <button class="close-btn" @click="closeAddMemberModal">×</button>
+        </div>
+        <div class="modal-body">
+          <form @submit.prevent="addMember">
+            <div class="form-group">
+              <label for="memberName">Namn *</label>
+              <input 
+                type="text" 
+                id="memberName" 
+                v-model="newMember.name" 
+                required
+                placeholder="För- och efternamn"
+              />
+            </div>
+            <div class="form-group">
+              <label for="memberEmail">E-post *</label>
+              <input 
+                type="email" 
+                id="memberEmail" 
+                v-model="newMember.email" 
+                required
+                placeholder="exempel@email.com"
+              />
+            </div>
+            <div class="form-group">
+              <label for="memberPhone">Telefon</label>
+              <input 
+                type="tel" 
+                id="memberPhone" 
+                v-model="newMember.phone"
+                placeholder="070-123 45 67"
+              />
+            </div>
+            <div class="form-group">
+              <label for="memberType">Medlemstyp *</label>
+              <select id="memberType" v-model="newMember.type" required>
+                <option value="">Välj medlemstyp</option>
+                <option value="regular">Ordinarie</option>
+                <option value="youth">Ungdom</option>
+                <option value="senior">Senior</option>
+                <option value="family">Familj</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="memberFee">Årsavgift (kr) *</label>
+              <input 
+                type="number" 
+                id="memberFee" 
+                v-model.number="newMember.fee" 
+                required
+                min="0"
+                placeholder="500"
+              />
+            </div>
+            <div class="form-group checkbox-group">
+              <label>
+                <input 
+                  type="checkbox" 
+                  v-model="newMember.paid"
+                />
+                <span>Har betalat årsavgift</span>
+              </label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" @click="closeAddMemberModal">Avbryt</button>
+          <button class="upload-btn" @click="addMember">Lägg till Medlem</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Register Income Modal -->
+    <div v-if="showIncomeModal" class="modal-overlay" @click="closeIncomeModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h2>Registrera Intäkt</h2>
+          <button class="close-btn" @click="closeIncomeModal">×</button>
+        </div>
+        <div class="modal-body">
+          <form @submit.prevent="registerIncome">
+            <div class="form-group">
+              <label for="incomeDescription">Beskrivning *</label>
+              <input 
+                type="text" 
+                id="incomeDescription" 
+                v-model="newIncome.description" 
+                required
+                placeholder="T.ex. Medlemsavgifter, Sponsring"
+              />
+            </div>
+            <div class="form-group">
+              <label for="incomeAmount">Belopp (kr) *</label>
+              <input 
+                type="number" 
+                id="incomeAmount" 
+                v-model.number="newIncome.amount" 
+                required
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+              />
+            </div>
+            <div class="form-group">
+              <label for="incomeCategory">Kategori *</label>
+              <select id="incomeCategory" v-model="newIncome.category" required>
+                <option value="">Välj kategori</option>
+                <option value="Medlemsavgifter">Medlemsavgifter</option>
+                <option value="Sponsring">Sponsring</option>
+                <option value="Tävlingsavgifter">Tävlingsavgifter</option>
+                <option value="Bidrag">Bidrag</option>
+                <option value="Övrigt">Övrigt</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="incomeDate">Datum *</label>
+              <input 
+                type="date" 
+                id="incomeDate" 
+                v-model="newIncome.date" 
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="incomeNotes">Anteckningar</label>
+              <textarea 
+                id="incomeNotes" 
+                v-model="newIncome.notes"
+                rows="3"
+                placeholder="Valfri information..."
+              ></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" @click="closeIncomeModal">Avbryt</button>
+          <button class="upload-btn" @click="registerIncome">Registrera Intäkt</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Register Expense Modal -->
+    <div v-if="showExpenseModal" class="modal-overlay" @click="closeExpenseModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h2>Registrera Utgift</h2>
+          <button class="close-btn" @click="closeExpenseModal">×</button>
+        </div>
+        <div class="modal-body">
+          <form @submit.prevent="registerExpense">
+            <div class="form-group">
+              <label for="expenseDescription">Beskrivning *</label>
+              <input 
+                type="text" 
+                id="expenseDescription" 
+                v-model="newExpense.description" 
+                required
+                placeholder="T.ex. Lokalhyra, Utrustning"
+              />
+            </div>
+            <div class="form-group">
+              <label for="expenseAmount">Belopp (kr) *</label>
+              <input 
+                type="number" 
+                id="expenseAmount" 
+                v-model.number="newExpense.amount" 
+                required
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+              />
+            </div>
+            <div class="form-group">
+              <label for="expenseCategory">Kategori *</label>
+              <select id="expenseCategory" v-model="newExpense.category" required>
+                <option value="">Välj kategori</option>
+                <option value="Lokalhyra">Lokalhyra</option>
+                <option value="Utrustning">Utrustning</option>
+                <option value="Tränare">Tränare</option>
+                <option value="Resor">Resor</option>
+                <option value="Marknadsföring">Marknadsföring</option>
+                <option value="Administration">Administration</option>
+                <option value="Övrigt">Övrigt</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="expenseDate">Datum *</label>
+              <input 
+                type="date" 
+                id="expenseDate" 
+                v-model="newExpense.date" 
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="expenseNotes">Anteckningar</label>
+              <textarea 
+                id="expenseNotes" 
+                v-model="newExpense.notes"
+                rows="3"
+                placeholder="Valfri information..."
+              ></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" @click="closeExpenseModal">Avbryt</button>
+          <button class="upload-btn" @click="registerExpense">Registrera Utgift</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Swish Payment Modal -->
+    <div v-if="showSwishModal" class="modal-overlay" @click="closeSwishModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h2>Swish Betalning</h2>
+          <button class="close-btn" @click="closeSwishModal">×</button>
+        </div>
+        <div class="modal-body">
+          <form @submit.prevent="requestSwishPayment">
+            <div class="form-group">
+              <label for="swishPhone">Telefonnummer *</label>
+              <input 
+                type="tel" 
+                id="swishPhone" 
+                v-model="swishPayment.phone" 
+                required
+                placeholder="07X-XXX XX XX"
+                pattern="[0-9\s\-]+"
+              />
+            </div>
+            <div class="form-group">
+              <label for="swishAmount">Belopp (kr) *</label>
+              <input 
+                type="number" 
+                id="swishAmount" 
+                v-model.number="swishPayment.amount" 
+                required
+                min="1"
+                step="0.01"
+                placeholder="0.00"
+              />
+            </div>
+            <div class="form-group">
+              <label for="swishDescription">Beskrivning *</label>
+              <textarea 
+                id="swishDescription" 
+                v-model="swishPayment.description"
+                required
+                rows="3"
+                placeholder="T.ex. Medlemsavgift 2025, Träningsavgift"
+                maxlength="50"
+              ></textarea>
+              <small class="char-count">{{ swishPayment.description.length }}/50 tecken</small>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="cancel-btn" @click="closeSwishModal">Avbryt</button>
+          <button class="upload-btn" @click="requestSwishPayment">Begär Betalning</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template><script>
 export default {
@@ -167,6 +502,40 @@ export default {
       totalMembers: 127,
       paidMembers: 102,
       unpaidMembers: 25,
+      showUploadModal: false,
+      isDragging: false,
+      selectedFiles: [],
+      showAddMemberModal: false,
+      newMember: {
+        name: '',
+        email: '',
+        phone: '',
+        type: '',
+        fee: 500,
+        paid: false
+      },
+      showIncomeModal: false,
+      newIncome: {
+        description: '',
+        amount: 0,
+        category: '',
+        date: new Date().toISOString().split('T')[0],
+        notes: ''
+      },
+      showExpenseModal: false,
+      newExpense: {
+        description: '',
+        amount: 0,
+        category: '',
+        date: new Date().toISOString().split('T')[0],
+        notes: ''
+      },
+      showSwishModal: false,
+      swishPayment: {
+        phone: '',
+        amount: 0,
+        description: ''
+      },
       recentTransactions: [
         { id: 1, type: 'income', description: 'Medlemsavgifter - December', amount: 32000, date: '1 Dec 2025' },
         { id: 2, type: 'expense', description: 'Utrustning', amount: 8500, date: '30 Nov 2025' },
@@ -201,7 +570,211 @@ export default {
   methods: {
     handleAction(action) {
       console.log('Action:', action)
-      alert(`Funktionen "${action}" kommer snart!`)
+      if (action === 'upload-receipt') {
+        this.showUploadModal = true
+      } else if (action === 'add-member') {
+        this.showAddMemberModal = true
+      } else if (action === 'record-income') {
+        this.showIncomeModal = true
+      } else if (action === 'record-expense') {
+        this.showExpenseModal = true
+      } else if (action === 'swish-payment') {
+        this.showSwishModal = true
+      } else {
+        alert(`Funktionen "${action}" kommer snart!`)
+      }
+    },
+    handleViewAllAlerts() {
+      console.log('View all alerts')
+      alert('Öppnar åtgärdssida (kommer snart)...')
+    },
+    closeUploadModal() {
+      this.showUploadModal = false
+      this.selectedFiles = []
+      this.isDragging = false
+    },
+    handleDragEnter(e) {
+      e.preventDefault()
+      this.isDragging = true
+    },
+    handleDragOver(e) {
+      e.preventDefault()
+      this.isDragging = true
+    },
+    handleDragLeave(e) {
+      e.preventDefault()
+      this.isDragging = false
+    },
+    handleDrop(e) {
+      e.preventDefault()
+      this.isDragging = false
+      const files = Array.from(e.dataTransfer.files)
+      this.addFiles(files)
+    },
+    handleFileSelect(e) {
+      const files = Array.from(e.target.files)
+      this.addFiles(files)
+    },
+    addFiles(files) {
+      const validFiles = files.filter(file => {
+        const isImage = file.type.startsWith('image/')
+        const isPDF = file.type === 'application/pdf'
+        return isImage || isPDF
+      })
+      this.selectedFiles = [...this.selectedFiles, ...validFiles]
+    },
+    removeFile(index) {
+      this.selectedFiles.splice(index, 1)
+    },
+    formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes'
+      const k = 1024
+      const sizes = ['Bytes', 'KB', 'MB', 'GB']
+      const i = Math.floor(Math.log(bytes) / Math.log(k))
+      return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+    },
+    uploadFiles() {
+      console.log('Uploading files:', this.selectedFiles)
+      // Here you would typically send files to a backend server
+      alert(`${this.selectedFiles.length} fil(er) laddades upp!`)
+      this.closeUploadModal()
+    },
+    closeAddMemberModal() {
+      this.showAddMemberModal = false
+      this.newMember = {
+        name: '',
+        email: '',
+        phone: '',
+        type: '',
+        fee: 500,
+        paid: false
+      }
+    },
+    addMember() {
+      console.log('Adding member:', this.newMember)
+      // Here you would typically send the member data to a backend server
+      
+      // Update member counts
+      this.totalMembers++
+      if (this.newMember.paid) {
+        this.paidMembers++
+      } else {
+        this.unpaidMembers++
+      }
+      
+      alert(`Medlem ${this.newMember.name} har lagts till!`)
+      this.closeAddMemberModal()
+    },
+    closeIncomeModal() {
+      this.showIncomeModal = false
+      this.newIncome = {
+        description: '',
+        amount: 0,
+        category: '',
+        date: new Date().toISOString().split('T')[0],
+        notes: ''
+      }
+    },
+    registerIncome() {
+      console.log('Registering income:', this.newIncome)
+      
+      // Update monthly income
+      this.monthlyIncome += this.newIncome.amount
+      
+      // Update cash and bank
+      this.cashAndBank += this.newIncome.amount
+      
+      // Add to recent transactions
+      const formattedDate = new Date(this.newIncome.date).toLocaleDateString('sv-SE', { 
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric' 
+      })
+      this.recentTransactions.unshift({
+        id: Date.now(),
+        type: 'income',
+        description: this.newIncome.description,
+        amount: this.newIncome.amount,
+        date: formattedDate
+      })
+      
+      // Update income breakdown
+      const existingCategory = this.incomeBreakdown.find(item => item.category === this.newIncome.category)
+      if (existingCategory) {
+        existingCategory.amount += this.newIncome.amount
+      } else {
+        this.incomeBreakdown.push({
+          id: Date.now(),
+          category: this.newIncome.category,
+          amount: this.newIncome.amount
+        })
+      }
+      
+      alert(`Intäkt på ${this.newIncome.amount.toLocaleString()} kr har registrerats!`)
+      this.closeIncomeModal()
+    },
+    closeExpenseModal() {
+      this.showExpenseModal = false
+      this.newExpense = {
+        description: '',
+        amount: 0,
+        category: '',
+        date: new Date().toISOString().split('T')[0],
+        notes: ''
+      }
+    },
+    registerExpense() {
+      console.log('Registering expense:', this.newExpense)
+      
+      // Update monthly expenses
+      this.monthlyExpenses += this.newExpense.amount
+      
+      // Update cash and bank
+      this.cashAndBank -= this.newExpense.amount
+      
+      // Add to recent transactions
+      const formattedDate = new Date(this.newExpense.date).toLocaleDateString('sv-SE', { 
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric' 
+      })
+      this.recentTransactions.unshift({
+        id: Date.now(),
+        type: 'expense',
+        description: this.newExpense.description,
+        amount: this.newExpense.amount,
+        date: formattedDate
+      })
+      
+      // Update expense breakdown
+      const existingCategory = this.expenseBreakdown.find(item => item.category === this.newExpense.category)
+      if (existingCategory) {
+        existingCategory.amount += this.newExpense.amount
+      } else {
+        this.expenseBreakdown.push({
+          id: Date.now(),
+          category: this.newExpense.category,
+          amount: this.newExpense.amount
+        })
+      }
+      
+      alert(`Utgift på ${this.newExpense.amount.toLocaleString()} kr har registrerats!`)
+      this.closeExpenseModal()
+    },
+    closeSwishModal() {
+      this.showSwishModal = false
+      this.swishPayment = {
+        phone: '',
+        amount: 0,
+        description: ''
+      }
+    },
+    requestSwishPayment() {
+      console.log('Requesting Swish payment:', this.swishPayment)
+      // Here you would typically integrate with Swish API
+      
+      alert(`Swish-betalning på ${this.swishPayment.amount.toLocaleString()} kr har begärts från ${this.swishPayment.phone}`)
+      this.closeSwishModal()
     }
   }
 }
@@ -211,7 +784,8 @@ export default {
 .dashboard-page {
   background-color: var(--background);
   min-height: calc(100vh - 60px);
-  padding-top: 60px;
+  padding-top: 30px;
+  margin-bottom: 30px;
   overflow: hidden;
 }
 
@@ -242,14 +816,14 @@ export default {
 }
 
 .welcome-text h1 {
-  font-size: 1.3rem;
+  font-size: 1.625rem;
   color: var(--primary-dark);
   margin: 0;
   line-height: 1.2;
 }
 
 .welcome-text p {
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: var(--text-dark);
   margin: 0;
   opacity: 0.8;
@@ -262,8 +836,9 @@ export default {
 
 .main-grid {
   display: grid;
-  grid-template-columns: 300px 1fr 320px;
-  gap: 1rem;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1.1fr 1fr;
+  gap: 1.5rem;
   flex: 1;
   min-height: 0;
 }
@@ -273,6 +848,8 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .stats-compact {
@@ -283,7 +860,7 @@ export default {
 }
 
 .section-title {
-  font-size: 0.85rem;
+  font-size: 1.0625rem;
   color: var(--primary-dark);
   margin: 0 0 0.75rem 0;
   font-weight: 600;
@@ -301,7 +878,7 @@ export default {
 }
 
 .stat-label {
-  font-size: 0.75rem;
+  font-size: 0.9375rem;
   color: var(--text-dark);
   opacity: 0.7;
   font-weight: 500;
@@ -309,7 +886,7 @@ export default {
 }
 
 .stat-amount {
-  font-size: 1.5rem;
+  font-size: 1.875rem;
   font-weight: 700;
   color: var(--primary-dark);
 }
@@ -353,13 +930,13 @@ export default {
 }
 
 .member-label {
-  font-size: 0.85rem;
+  font-size: 1.0625rem;
   color: var(--text-dark);
   font-weight: 500;
 }
 
 .member-value {
-  font-size: 1.1rem;
+  font-size: 1.375rem;
   font-weight: 700;
   color: var(--primary-dark);
 }
@@ -377,10 +954,13 @@ export default {
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .breakdown-panel h3 {
-  font-size: 0.9rem;
+  font-size: 1.125rem;
   color: var(--primary-dark);
   margin: 0 0 0.75rem 0;
   font-weight: 600;
@@ -402,13 +982,13 @@ export default {
 }
 
 .breakdown-label {
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: var(--text-dark);
   font-weight: 500;
 }
 
 .breakdown-value {
-  font-size: 0.85rem;
+  font-size: 1.0625rem;
   font-weight: 700;
   color: var(--primary-dark);
 }
@@ -420,7 +1000,7 @@ export default {
 }
 
 .panel-header-title {
-  font-size: 0.9rem;
+  font-size: 1.125rem;
   color: var(--primary-dark);
   margin: 0 0 0.75rem 0;
   font-weight: 600;
@@ -432,6 +1012,23 @@ export default {
 .center-column {
   display: flex;
   flex-direction: column;
+  grid-column: 2 / 4;
+  grid-row: 1;
+}
+
+.center-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  height: 100%;
+}
+
+.center-left,
+.center-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
 }
 
 .panel {
@@ -456,7 +1053,7 @@ export default {
 }
 
 .panel-header h3 {
-  font-size: 1rem;
+  font-size: 1.25rem;
   color: var(--primary-dark);
   margin: 0;
   font-weight: 600;
@@ -497,13 +1094,13 @@ export default {
 }
 
 .action-icon {
-  font-size: 1.3rem;
+  font-size: 1.625rem;
   font-weight: 700;
   color: var(--primary-dark);
 }
 
 .action-text {
-  font-size: 0.75rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--primary-dark);
   text-align: center;
@@ -516,6 +1113,8 @@ export default {
   gap: 0.5rem;
   overflow-y: auto;
   flex: 1;
+  min-height: 0;
+  max-height: 100%;
 }
 
 .activity-row {
@@ -536,7 +1135,7 @@ export default {
 }
 
 .activity-name {
-  font-size: 0.9rem;
+  font-size: 1.125rem;
   font-weight: 500;
   color: var(--primary-dark);
   white-space: nowrap;
@@ -545,13 +1144,13 @@ export default {
 }
 
 .activity-date {
-  font-size: 0.75rem;
+  font-size: 0.9375rem;
   color: var(--text-dark);
   opacity: 0.7;
 }
 
 .activity-amount {
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 700;
   margin-left: 1rem;
   white-space: nowrap;
@@ -570,19 +1169,79 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  max-height: 100%;
+  overflow: hidden;
+  grid-column: 4;
+  grid-row: 1;
+}
+
+/* Bottom Row */
+.bottom-left {
+  grid-column: 1;
+  grid-row: 2;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.bottom-left .panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.bottom-center {
+  grid-column: 2 / 4;
+  grid-row: 2;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.bottom-right-1 {
+  grid-column: 3;
+  grid-row: 2;
+  display: none;
+}
+
+.bottom-right-2 {
+  grid-column: 4;
+  grid-row: 2;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.bottom-right-2 .panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .right-column .panel {
   flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .alerts-compact {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
   overflow-y: auto;
   flex: 1;
+  margin-bottom: 0.75rem;
+  min-height: 0;
+  max-height: calc(100% - 50px);
 }
 
 .alert-row {
@@ -593,6 +1252,7 @@ export default {
   background: var(--background);
   border-radius: 6px;
   border-left: 3px solid transparent;
+  flex-shrink: 0;
 }
 
 .alert-row.warning {
@@ -606,36 +1266,548 @@ export default {
 }
 
 .alert-icon {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--primary-dark);
 }
 
 .alert-text {
-  font-size: 0.85rem;
+  font-size: 1.0625rem;
   color: var(--primary-dark);
   font-weight: 500;
+  flex: 1;
 }
 
-@media (max-width: 1200px) {
+.alerts-action-btn {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  background-color: var(--primary-light);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.alerts-action-btn:hover {
+  background-color: var(--primary-medium);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 1400px) {
   .main-grid {
-    grid-template-columns: 1fr;
-    overflow-y: auto;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: auto auto;
   }
 
-  .left-column,
+  .left-column {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .center-column {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
   .right-column {
-    flex-direction: row;
+    grid-column: 3;
+    grid-row: 1;
   }
 
-  .stats-compact,
-  .actions-panel,
-  .panel {
-    min-height: 200px;
+  .bottom-left {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .bottom-center {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .bottom-right-2 {
+    grid-column: 3;
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .left-column {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .center-column {
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
+
+  .right-column {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .bottom-left {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .bottom-center {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .bottom-right-2 {
+    grid-column: 1 / 3;
+    grid-row: 4;
   }
 
   .quick-actions-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
+}
+
+@media (max-width: 768px) {
+  .container-full {
+    padding: 0.5rem 1rem;
+  }
+
+  .main-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 1rem;
+  }
+
+  .left-column,
+  .center-column,
+  .right-column,
+  .bottom-left,
+  .bottom-center,
+  .bottom-right-2 {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .center-split {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .welcome-text h1 {
+    font-size: 1.25rem;
+  }
+
+  .welcome-text p {
+    font-size: 0.875rem;
+  }
+
+  .stat-amount {
+    font-size: 1.5rem;
+  }
+
+  .panel-header h3 {
+    font-size: 1rem;
+  }
+
+  .action-text {
+    font-size: 0.8rem;
+  }
+
+  .activity-name {
+    font-size: 0.95rem;
+  }
+
+  .activity-amount {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .main-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .stat-amount {
+    font-size: 1.25rem;
+  }
+
+  .action-icon {
+    font-size: 1.25rem;
+  }
+
+  .action-text {
+    font-size: 0.75rem;
+  }
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--background);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--primary-dark);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-dark);
+  cursor: pointer;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: var(--background);
+  color: var(--primary-dark);
+}
+
+.upload-area {
+  margin: 2rem;
+  padding: 3rem 2rem;
+  border: 3px dashed #cbd5e1;
+  border-radius: 12px;
+  text-align: center;
+  background: var(--background);
+  transition: all 0.3s ease;
+}
+
+.upload-area.dragover {
+  border-color: var(--primary-light);
+  background: #e0f2fe;
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.upload-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin: 0.5rem 0;
+}
+
+.upload-subtext {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  margin: 0.5rem 0;
+}
+
+.browse-btn {
+  margin: 1rem 0;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: var(--primary-light);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.browse-btn:hover {
+  background-color: var(--primary-medium);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.upload-hint {
+  font-size: 0.75rem;
+  color: var(--text-dark);
+  opacity: 0.7;
+  margin: 0.5rem 0 0 0;
+}
+
+.file-list {
+  margin: 0 2rem 2rem 2rem;
+  padding: 1rem;
+  background: var(--background);
+  border-radius: 8px;
+}
+
+.file-list h3 {
+  font-size: 0.9rem;
+  color: var(--primary-dark);
+  margin: 0 0 1rem 0;
+  font-weight: 600;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.file-item:last-child {
+  margin-bottom: 0;
+}
+
+.file-icon {
+  font-size: 1.5rem;
+}
+
+.file-name {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--primary-dark);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-size {
+  font-size: 0.8rem;
+  color: var(--text-dark);
+  opacity: 0.7;
+}
+
+.remove-file-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  cursor: pointer;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.remove-file-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 2px solid var(--background);
+}
+
+.cancel-btn,
+.upload-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn {
+  background: var(--background);
+  color: var(--text-dark);
+}
+
+.cancel-btn:hover {
+  background: #e2e8f0;
+}
+
+.upload-btn {
+  background-color: var(--primary-light);
+  color: white;
+}
+
+.upload-btn:hover:not(:disabled) {
+  background-color: var(--primary-medium);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.upload-btn:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Form Styles */
+.modal-body {
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #94a3b8;
+}
+
+.checkbox-group {
+  margin-top: 1rem;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-light);
+}
+
+.checkbox-group span {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea::placeholder {
+  color: #94a3b8;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--text-dark);
+  opacity: 0.6;
+  margin-top: 0.25rem;
 }
 </style>
