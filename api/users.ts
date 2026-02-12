@@ -1,26 +1,32 @@
-import { PrismaClient } from '../src/generated/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import pg from 'pg'
+import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { prisma } from '../lib/prisma'
 
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL })
-const adapter = new PrismaPg(pool)
-const prisma = new PrismaClient({ adapter })
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  try {
+    if (req.method === 'GET') {
+      const users = await prisma.user.findMany()
+      return res.status(200).json(users)
+    }
 
-export default async function handler(req: any, res: any) {
-  if (req.method === 'GET') {
-    const users = await prisma.user.findMany()
-    return res.status(200).json(users)
+    if (req.method === 'POST') {
+      const { email, name, password } = req.body
+      if (!email || !name || !password) {
+        return res.status(400).json({ error: 'Missing required fields' })
+      }
+
+      const user = await prisma.user.create({
+        data: {
+          email: email as string,
+          name: name as string,
+          password: password as string
+        }
+      })
+      return res.status(201).json(user)
+    }
+
+    return res.status(405).json({ error: 'Method not allowed' })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ error: 'Internal server error' })
   }
-
-  if (req.method === 'POST') {
-    const { email, name } = req.body
-
-    const user = await prisma.user.create({
-      data: { email, name }
-    })
-
-    return res.status(201).json(user)
-  }
-
-  return res.status(405).json({ message: 'Method not allowed' })
 }
