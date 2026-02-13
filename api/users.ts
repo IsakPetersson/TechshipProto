@@ -1,5 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { prisma } from '../lib/prisma'
+import { PrismaClient } from '../src/generated/client'
+
+const prisma = new PrismaClient({
+  accelerateUrl: process.env.DATABASE_URL!,
+})
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
