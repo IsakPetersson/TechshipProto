@@ -47,33 +47,78 @@
         </ul>
       </nav>
       
-      <div v-if="user" class="user-info">
-        <div class="user-avatar">
-          <span class="avatar-initial">{{ userInitial }}</span>
-        </div>
-        <div class="user-details">
-          <div class="user-name">{{ user.name }}</div>
-          <div class="user-email">{{ user.email }}</div>
+      <div v-if="user" class="user-section">
+        <a href="#" @click.prevent="openOrganizationsModal" class="organizations-link">
+          <span class="nav-icon">◆</span>
+          <span class="nav-text">Organisationer</span>
+        </a>
+        
+        <div class="user-info">
+          <div class="user-avatar">
+            <span class="avatar-initial">{{ userInitial }}</span>
+          </div>
+          <div class="user-details">
+            <div class="user-name">{{ user.name }}</div>
+            <div class="user-email">{{ user.email }}</div>
+          </div>
         </div>
       </div>
     </aside>
 
     <div class="main-content">
       <router-view />
+    </div>
 
-      
+    <!-- Organizations Modal -->
+    <div v-if="showOrganizationsModal" class="modal-overlay" @click.self="closeOrganizationsModal">
+      <div class="modal-content organizations-modal">
+        <div class="modal-header">
+          <h2>Organisationer</h2>
+          <button class="close-btn" @click="closeOrganizationsModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="organizations-section">
+            <h3>Nuvarande Organisationer</h3>
+            <div class="organizations-list">
+              <div v-if="organizations.length === 0" class="no-organizations">
+                <p>Du är inte med i någon organisation ännu.</p>
+              </div>
+              <div v-else>
+                <div v-for="org in organizations" :key="org.id" class="organization-item">
+                  <div class="org-info">
+                    <span class="org-name">{{ org.name }}</span>
+                    <span class="org-role">{{ org.role }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="organizations-actions">
+            <button class="btn btn-primary" @click="joinOrganization">
+              Gå med i Organisation
+            </button>
+            <button class="btn btn-primary" @click="createOrganization">
+              Skapa Organisation
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { getCurrentUser, logout } from './lib/auth'
+import { getUserOrganizations, createOrganization as createOrg, joinOrganization as joinOrg } from './lib/orgs'
 
 export default {
   name: 'App',
   data() {
     return {
-      user: null
+      user: null,
+      showOrganizationsModal: false,
+      organizations: []
     }
   },
   async mounted() {
@@ -104,6 +149,49 @@ export default {
         this.$router.push('/')
       } catch (error) {
         console.error('Logout failed:', error)
+      }
+    },
+    async openOrganizationsModal() {
+      this.showOrganizationsModal = true
+      try {
+        const memberships = await getUserOrganizations()
+        this.organizations = memberships.map(m => ({
+          id: m.organization.id,
+          name: m.organization.name,
+          role: m.role
+        }))
+      } catch (error) {
+        console.error('Failed to load organizations:', error)
+        this.organizations = []
+      }
+    },
+    closeOrganizationsModal() {
+      this.showOrganizationsModal = false
+    },
+    async joinOrganization() {
+      const code = prompt('Ange inbjödningskod:')
+      if (!code || !code.trim()) return
+
+      try {
+        const result = await joinOrg(code.trim())
+        alert(`Du har gått med i "${result.organization.name}" som ${result.role}`)
+        // Refresh the organizations list
+        await this.openOrganizationsModal()
+      } catch (error) {
+        alert(error.message || 'Kunde inte gå med i organisationen')
+      }
+    },
+    async createOrganization() {
+      const name = prompt('Ange organisationens namn:')
+      if (!name || !name.trim()) return
+
+      try {
+        const result = await createOrg(name.trim())
+        alert(`Organisation "${result.organization.name}" skapades!\n\nInbjödningskod: ${result.invite.code}\n\nDela denna kod med andra för att bjuda in dem.`)
+        // Refresh the organizations list
+        await this.openOrganizationsModal()
+      } catch (error) {
+        alert(error.message || 'Kunde inte skapa organisationen')
       }
     }
   },
@@ -229,6 +317,28 @@ export default {
 
 .nav-text {
   font-size: clamp(0.875rem, 1.5vh, 1rem);
+}
+
+.user-section {
+  margin-top: auto;
+}
+
+.organizations-link {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+  padding: clamp(0.75rem, 1.5vh, 1rem) clamp(1rem, 2vw, 1.5rem);
+  color: var(--text-light);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.organizations-link:hover {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .user-info {
@@ -363,4 +473,179 @@ export default {
     gap: clamp(0.4rem, 1.2vw, 0.6rem);
   }
 }
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background-color: var(--text-light);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.organizations-modal {
+  max-width: 700px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--background);
+}
+
+.modal-header h2 {
+  font-size: 1.75rem;
+  color: var(--primary-dark);
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-dark);
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: var(--primary-dark);
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.organizations-section {
+  margin-bottom: 2rem;
+}
+
+.organizations-section h3 {
+  font-size: 1.25rem;
+  color: var(--primary-dark);
+  margin-bottom: 1rem;
+}
+
+.organizations-list {
+  background-color: var(--background);
+  border-radius: 8px;
+  padding: 1rem;
+  min-height: 150px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.no-organizations {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  color: var(--text-dark);
+  opacity: 0.7;
+}
+
+.no-organizations p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.organization-item {
+  background-color: var(--text-light);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.organization-item:last-child {
+  margin-bottom: 0;
+}
+
+.organization-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.org-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.org-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.org-role {
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  background-color: var(--background);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+}
+
+.organizations-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.organizations-actions button {
+  flex: 1;
+  min-width: 200px;
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    max-width: 95%;
+  }
+  
+  .modal-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .modal-body {
+    padding: 1.5rem;
+  }
+  
+  .organizations-actions {
+    flex-direction: column;
+  }
+  
+  .organizations-actions button {
+    min-width: 100%;
+  }
+}
 </style>
+
