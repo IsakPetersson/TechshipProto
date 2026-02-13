@@ -1,4 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import type { VercelResponse, VercelRequest } from '@vercel/node'
 import jwt from 'jsonwebtoken'
 import { parse, serialize } from 'cookie'
 
@@ -10,9 +10,18 @@ function getJwtSecret() {
     return secret
 }
 
-export function setSessionCookie(res: VercelResponse, userId: number) {
+export function setSessionCookie(
+    res: VercelResponse,
+    userId: number,
+    opts?: { rememberMe?: boolean }
+) {
+    const rememberMe = !!opts?.rememberMe
+    const maxAgeSeconds = rememberMe
+        ? 60 * 60 * 24 * 30
+        : 60 * 60 * 24 * 1
+
     const token = jwt.sign({ sub: String(userId) }, getJwtSecret(), {
-        expiresIn: '7d'
+        expiresIn: maxAgeSeconds
     })
 
     const cookie = serialize(COOKIE_NAME, token, {
@@ -20,7 +29,7 @@ export function setSessionCookie(res: VercelResponse, userId: number) {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        maxAge: 60 * 60 * 24 * 7
+        maxAge: maxAgeSeconds
     })
 
     res.setHeader('Set-Cookie', cookie)

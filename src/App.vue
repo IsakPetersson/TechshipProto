@@ -32,6 +32,12 @@
               <span class="nav-text">Kontakt</span>
             </router-link>
           </li>
+          <li>
+            <router-link to="/login" active-class="active">
+              <span class="nav-icon">▶</span>
+              <span class="nav-text">Logga In</span>
+            </router-link>
+          </li>
         </ul>
       </nav>
     </aside>

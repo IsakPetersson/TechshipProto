@@ -9,7 +9,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(405).json({ error: 'Method not allowed' })
         }
 
-        const { email, name, password } = req.body ?? {}
+        const { email, name, password, rememberMe } = req.body ?? {}
+
         if (!email || !name || !password) {
             return res.status(400).json({ error: 'Missing required fields' })
         }
@@ -23,7 +24,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             select: { id: true, email: true, name: true, createdAt: true }
         })
 
-        setSessionCookie(res, user.id)
+        setSessionCookie(res, user.id, { rememberMe })
+
         return res.status(201).json(user)
     } catch (error: any) {
         if (error?.code === 'P2002') {
