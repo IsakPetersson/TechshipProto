@@ -134,7 +134,7 @@
         <div class="modal-body">
           <p class="welcome-message">Ditt konto har skapats! Vill du gå med i en organisation eller skapa en ny?</p>
           <div class="org-setup-actions">
-            <button class="btn btn-secondary btn-full" @click="openJoinOrgFromSetup">
+            <button class="btn btn-primary btn-full" @click="openJoinOrgFromSetup">
               Gå med i Organisation
             </button>
             <button class="btn btn-primary btn-full" @click="openCreateOrgFromSetup">
@@ -635,6 +635,22 @@ export default {
   color: #d32f2f;
   margin: 0;
   font-size: 0.9rem;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--primary-dark);
+  cursor: pointer;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.btn-link:hover {
+  opacity: 0.7;
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {
