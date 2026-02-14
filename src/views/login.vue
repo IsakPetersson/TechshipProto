@@ -168,7 +168,7 @@
           </div>
           <p v-if="createError" class="error-message">{{ createError }}</p>
           <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" @click="closeCreateOrgModal">Avbryt</button>
+            <button type="button" class="btn btn-primary" @click="closeCreateOrgModal">Avbryt</button>
             <button type="submit" class="btn btn-primary" :disabled="createLoading">
               {{ createLoading ? 'Skapar...' : 'Skapa' }}
             </button>
@@ -197,7 +197,7 @@
           </div>
           <p v-if="joinError" class="error-message">{{ joinError }}</p>
           <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" @click="closeJoinOrgModal">Avbryt</button>
+            <button type="button" class="btn btn-primary" @click="closeJoinOrgModal">Avbryt</button>
             <button type="submit" class="btn btn-primary" :disabled="joinLoading">
               {{ joinLoading ? 'Går med...' : 'Gå med' }}
             </button>
@@ -219,7 +219,7 @@
             <label>Inbjödningskod:</label>
             <div class="invite-code-display">
               <code>{{ inviteCodeToShare }}</code>
-              <button type="button" class="btn btn-secondary btn-sm" @click="copyInviteCode">Kopiera</button>
+              <button type="button" class="btn btn-primary btn-sm" @click="copyInviteCode">Kopiera</button>
             </div>
             <p v-if="codeCopied" class="copy-success-message">✓ Kopierad!</p>
             <p class="invite-code-hint">Dela denna kod med andra för att bjuda in dem till organisationen.</p>
@@ -615,6 +615,20 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.org-setup-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.welcome-message {
+  font-size: 1rem;
+  color: var(--text-dark);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.6;
 }
 
 .error-message {
