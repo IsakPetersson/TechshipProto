@@ -12,7 +12,17 @@
         <div class="header-bar">
           <div class="welcome-text">
             <h1>Dashboard</h1>
-            <p>{{ organizationName }}</p>
+            <select 
+              v-if="userOrganizations.length > 1" 
+              v-model="organizationId" 
+              @change="onOrganizationChange"
+              class="org-selector"
+            >
+              <option v-for="org in userOrganizations" :key="org.organization.id" :value="org.organization.id">
+                {{ org.organization.name }}
+              </option>
+            </select>
+            <p v-else>{{ organizationName }}</p>
           </div>
           <div class="header-actions">
             <button class="quick-action-card header-btn" @click="handleViewFiles">
@@ -184,6 +194,41 @@
         </div>
       </div>
     </section>
+
+    <!-- Members Modal -->
+    <div v-if="showMembersModal" class="modal-overlay" @click="closeMembersModal">
+      <div class="modal-content members-modal" @click.stop>
+        <div class="modal-header">
+          <h2>Medlemmar i {{ organizationName }}</h2>
+          <button class="close-btn" @click="closeMembersModal">×</button>
+        </div>
+        <div class="modal-body">
+          <div v-if="members.length === 0" class="no-members">
+            <p>Inga medlemmar hittades.</p>
+          </div>
+          <div v-else class="members-list">
+            <div v-for="member in members" :key="member.id" class="member-item">
+              <div class="member-avatar">
+                <span class="avatar-initial">{{ member.user.name.charAt(0).toUpperCase() }}</span>
+              </div>
+              <div class="member-info">
+                <div class="member-name">{{ member.user.name }}</div>
+                <div class="member-email">{{ member.user.email }}</div>
+              </div>
+              <div class="member-role-badge" :class="member.role.toLowerCase()">
+                {{ member.role }}
+              </div>
+              <div class="member-joined">
+                Gick med {{ formatDate(member.joinedAt) }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" @click="closeMembersModal">Stäng</button>
+        </div>
+      </div>
+    </div>
 
     <!-- File Upload Modal -->
     <div v-if="showUploadModal" class="modal-overlay" @click="closeUploadModal">
@@ -527,7 +572,7 @@
 </template><script>
 import { getCurrentUser } from '../lib/auth'
 import { getUserOrganizations } from '../lib/orgs'
-import { getDashboardData, createTransaction, createAccount } from '../lib/dashboard'
+import { getDashboardData, createTransaction, createAccount, getOrganizationMembers } from '../lib/dashboard'
 
 export default {
   name: 'Dashboard',
@@ -537,6 +582,10 @@ export default {
       loading: true,
       organizationId: null,
       organizationName: '',
+      userOrganizations: [],
+      currentUserRole: '',
+      showMembersModal: false,
+      members: [],
       cashAndBank: 0,
       monthlyIncome: 0,
       monthlyExpenses: 0,
@@ -610,8 +659,17 @@ export default {
           return
         }
         
-        // Use the first organization (in the future, let user select)
-        this.organizationId = memberships[0].organization.id
+        // Store all organizations
+        this.userOrganizations = memberships
+        
+        // Use the selected organization or the first one
+        if (!this.organizationId) {
+          this.organizationId = memberships[0].organization.id
+        }
+        
+        // Get current user's role in this organization
+        const currentMembership = memberships.find(m => m.organization.id === this.organizationId)
+        this.currentUserRole = currentMembership?.role || ''
         
         // Fetch dashboard data
         const data = await getDashboardData(this.organizationId)
@@ -680,9 +738,25 @@ export default {
       console.log('View stored files')
       alert('Här hamnar alla dina uppladdade kvitton och dokument.')
     },
-    handleViewMembers() {
-      console.log('View members')
-      alert('Här visas en lista över alla medlemmar.')
+    async handleViewMembers() {
+      if (this.currentUserRole !== 'OWNER') {
+        alert('Endast organisationens ägare kan se medlemslistan.')
+        return
+      }
+      
+      try {
+        this.members = await getOrganizationMembers(this.organizationId)
+        this.showMembersModal = true
+      } catch (error) {
+        console.error('Failed to load members:', error)
+        alert('Kunde inte ladda medlemmar')
+      }
+    },
+    closeMembersModal() {
+      this.showMembersModal = false
+    },
+    async onOrganizationChange() {
+      await this.loadDashboard()
     },
     closeUploadModal() {
       this.showUploadModal = false
@@ -728,6 +802,14 @@ export default {
       const sizes = ['Bytes', 'KB', 'MB', 'GB']
       const i = Math.floor(Math.log(bytes) / Math.log(k))
       return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString)
+      return date.toLocaleDateString('sv-SE', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })
     },
     uploadFiles() {
       console.log('Uploading files:', this.selectedFiles)
@@ -969,6 +1051,28 @@ export default {
   color: var(--text-dark);
   margin: 0;
   opacity: 0.8;
+}
+
+.org-selector {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--background);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--text-dark);
+  background-color: var(--text-light);
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  max-width: 300px;
+}
+
+.org-selector:focus {
+  outline: none;
+  border-color: var(--primary-light);
+}
+
+.org-selector:hover {
+  border-color: var(--primary-light);
 }
 
 .main-actions {
@@ -2091,5 +2195,119 @@ export default {
   margin-bottom: 2rem;
   line-height: 1.6;
 }
-</style>
 
+/* Members Modal */
+.members-modal {
+  max-width: 800px;
+}
+
+.members-list {
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  background: var(--background);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.member-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.member-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.member-avatar .avatar-initial {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+.member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 0.25rem;
+}
+
+.member-email {
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  opacity: 0.7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.member-role-badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.member-role-badge.owner {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.member-role-badge.admin {
+  background: #ddd6fe;
+  color: #5b21b6;
+}
+
+.member-role-badge.member {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.member-role-badge.viewer {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.member-joined {
+  font-size: 0.875rem;
+  color: var(--text-dark);
+  opacity: 0.6;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.no-members {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-dark);
+  opacity: 0.7;
+}
+
+.no-members p {
+  margin: 0;
+  font-size: 1rem;
+}
+</style>

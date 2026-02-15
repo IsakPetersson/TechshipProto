@@ -94,3 +94,26 @@ export async function createAccount(organizationId: number, name: string): Promi
     })
     return jsonOrThrow(res)
 }
+
+export type OrganizationMember = {
+    id: number
+    role: string
+    joinedAt: string
+    user: {
+        id: number
+        name: string
+        email: string
+        createdAt: string
+    }
+}
+
+export async function getOrganizationMembers(organizationId: number): Promise<OrganizationMember[]> {
+    const res = await fetch('/api/members', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+            'x-org-id': String(organizationId)
+        }
+    })
+    return jsonOrThrow(res)
+}
